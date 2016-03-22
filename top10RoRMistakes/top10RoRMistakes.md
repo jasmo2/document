@@ -234,7 +234,25 @@ For instance, let's take the next piece of code as an example:
  end
 ```
 These previous code shows a news paper application l, where the user model has several roles and each one redirects to an specific method after go into the *index* .
-The problem here is the way is written, because,  is to messy to read and misuse the *Ruby* power.
+The problem here is the way is written, because,  is to messy to read and misuse the *Ruby* power, but overall is hard to maintain.
+
+> After refactor 
+
+> app/controllers/users_controller.rb
+
+
+```ruby
+
+redirection_path = Hash.new{|hash,key| hash[key] = user_path}
+redirection_path[:admin] =  admin_path
+redirection_path[:publisher] =  publisher_path
+redirection_path[:subscriber] =  subscriber_path
+
+@document.save ? redirect_to redirection_path[current_user.role.to_sym]
+    :  (render :new)
+```
+
+On the previous refactor the Logic Hash helps to redirect the user with a clean maintenance syntax.
 
 ## Not all models should be *ActiveModels*
 **RoR** give us the sensation that the only types of models, are the one provided by ActiveRecord, but is is a Lie.
