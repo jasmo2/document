@@ -209,7 +209,32 @@ end
 After refactoring, the publish method is push down into the model layer, as is shown now it could be access in the any controller with out repeating the code in multiple parts of the project.
 
 ## To much conditionals.
-Normally, developers use conditionals but they are too much in one place, there''s sign of **smelly code** ([How do I smell Ruby code?](http://rubylearning.com/blog/2011/03/01/how-do-i-smell-ruby-code/))
+Normally, developers using conditionals filter the application to go one way or another.But, sometimes to many of them in one method is a sign of **smelly code** ([How do I smell Ruby code?](http://rubylearning.com/blog/2011/03/01/how-do-i-smell-ruby-code/)), and they could be refactor.
+
+For instance, let's take the next piece of code as an example:
+
+
+> app/controllers/users_controller.rb
+
+```ruby
+  def index
+ if @document.save
+   if current_user.role == "admin"
+     redirect_to admin_path
+   elsif current_user.role == "publisher"
+     redirect_to publisher_path
+   elsif current_user.role == "subscriber"
+     redirect_to subscriber_path
+   else
+     redirect_to guest_path
+   end
+ else
+   render :new
+ end
+ end
+```
+These previous code shows a news paper application l, where the user model has several roles and each one redirects to an specific method after go into the *index* .
+The problem here is the way is written, because,  is to messy to read and misuse the *Ruby* power.
 
 ## Not all models should be *ActiveModels*
 **RoR** give us the sensation that the only types of models, are the one provided by ActiveRecord, but is is a Lie.
