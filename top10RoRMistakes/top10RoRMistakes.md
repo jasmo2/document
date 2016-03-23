@@ -183,6 +183,7 @@ For instance, calling an  object several times on a single controller gives us t
 > After refactor
 
 > app/controllers/items_controller.rb
+
 ```ruby
 def publish
   if @item.publish
@@ -211,32 +212,32 @@ After refactoring, the publish method is push down into the model layer, as is s
 ## To much conditionals.
 Normally, developers using conditionals filter the application to go one way or another.But, sometimes to many of them in one method is a sign of **smelly code** ([How do I smell Ruby code?](http://rubylearning.com/blog/2011/03/01/how-do-i-smell-ruby-code/)), and they could be refactor.
 
-For instance, let's take the next piece of code as an example:
+For instance, let''s take the next piece of code as an example:
 
 
 > app/controllers/users_controller.rb
 
 ```ruby
   def index
- if @document.save
-   if current_user.role == "admin"
-     redirect_to admin_path
-   elsif current_user.role == "publisher"
-     redirect_to publisher_path
-   elsif current_user.role == "subscriber"
-     redirect_to subscriber_path
-   else
-     redirect_to guest_path
-   end
- else
-   render :new
- end
+	 if @document.save
+		if current_user.role == "admin"
+			redirect_to admin_path
+		elsif current_user.role == "publisher"
+		 redirect_to publisher_path
+		elsif current_user.role == "subscriber"
+		 redirect_to subscriber_path
+		else
+		 redirect_to guest_path
+		end
+	 else
+	   render :new
+	 end
  end
 ```
-These previous code shows a news paper application l, where the user model has several roles and each one redirects to an specific method after go into the *index* .
+These previous code shows a news paper application. On the user model has several roles and each one redirects to an specific method after go into the *index* .
 The problem here is the way is written, because,  is to messy to read and misuse the *Ruby* power, but overall is hard to maintain.
 
-> After refactor 
+> After refactor
 
 > app/controllers/users_controller.rb
 
@@ -248,17 +249,94 @@ redirection_path[:admin] =  admin_path
 redirection_path[:publisher] =  publisher_path
 redirection_path[:subscriber] =  subscriber_path
 
-@document.save ? redirect_to redirection_path[current_user.role.to_sym]
-    :  (render :new)
+@document.save ? redirect_to redirection_path[current_user.role.to_sym]  :  (render :new)
 ```
 
 On the previous refactor the Logic Hash helps to redirect the user with a clean maintenance syntax.
 
 ## Not all models should be *ActiveModels*
-**RoR** give us the sensation that the only types of models, are the one provided by ActiveRecord, but is is a Lie.
-Usually in projects you can find heavy logic models that break the *single responsibility principle* ([*SOLID*](https://vimeo.com/12350535)).
+**RoR** give us the sensation  the only types of models, are the one provided by ActiveRecord, but is is a Lie.
+Usually in projects are heavy logic models that break the *single responsibility principle* ([*SOLID*](https://vimeo.com/12350535)). Moreover, gives responsibility to which do not belongs to the model itself.
+
+
+On the example below, a the user_model will be from a blog application:
+
+
+
+> app/models/user.rb
+
+```ruby
+class User < ActiveRecord::Base
+  has_many :posts
+  has_many :reviews
+
+  def cancel!
+	    self.class.transaction do
+			transactions ensure all enclosing database operations are atomic
+			      self.update!(is_approved: false)
+			      self.posts.each { |post| post.update!(is_approved: false) }
+			      self.reviews.each { |review| review.update!(is_approved: false) }
+			end
+		end
+end
+```
+
+On the model above we could see that the user model has not just the responsibility to update itself, but also it has to do transaction to the posts and reviews models. Now our model is an anti-pattern known as **God Object**. A much better way to a handle these other responsibilities.
+
+> Refactor
+> app/models/user_cancelation.rb
+
+```ruby
+class UserCancelation
+	def initialize(user)
+		@user = user
+	end
+
+	def create
+		@user.class.transaction do
+			cancel_user!
+			cancel_items!
+			cancel_reviews!
+		end
+	end
+
+	private
+		def cancel_user!
+			self.update!(is_approved: false)
+		end
+		def cancel_posts!
+			self.posts.each { |post| post.update!(is_approved: false) }
+		end
+		def cancel_reviews!
+			self.reviews.each { |review| review.update!(is_approved: false) }
+		end
+end
+```
+
+As is shown above, the *UserCancelation* model is in charge to denied the access to an specific user as well as un-approve the posts and reviews. Now, the concerns are separate on different objects, making easier to change on the future. Is implemented as a **PORO** (Plain Old Ruby Object).
+
+On the controller, the code will look clean and the variation will take place on calling different objects and not just one:
+
+
+> app/controller/users_controller.rb
+
+```ruby
+class UsersController < ApplicationController
+  def cancel_subscription
+    @user = User.find(params[:id])
+    cancelation = UserCancelation.new(@user)
+    cancelation.create!
+    redirect_to @user, notice: 'Successfully suspended.'
+	end
+end
+```
+
+As shown on the refactor is better to separate the concerns on different models. It could be an excellent approach when the load on a single method want to be distributed into smaller tasks.
+
+
 
 ~~Ruby is originally concede to **OOP** but **RoR** is a MVC-pattern oriented Ruby programming.~~
+
 
 ## ORM memory overloading queries
 **RoR** is provided by default by with many tools like ActiveRecord, but the "magic" some times have performance issues if they are not used well.
