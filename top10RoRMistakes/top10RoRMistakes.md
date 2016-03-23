@@ -339,8 +339,34 @@ As shown on the refactor is better to separate the concerns on different models.
 
 
 ## ORM memory overloading queries
-**RoR** is provided by default by with many tools like ActiveRecord, but the "magic" some times have performance issues if they are not used well.
+**RoR** is provided by default by with many tools like **ActiveRecord**, but the "magic" some times have performance issues if they are not used well.
 On large applications memory consumption and response times could be an issue ([How to optimize Active Record Queries](http://codebeerstartups.com/2013/04/how-to-optimize-active-record-queries/)).
+
+
+For instance, there are many tips that will help you to make database queries as smooth as possible.
+
+* **Sumatories**: better is to past the symbol and NOT a reference variable.
+	* Transaction.sum(&:user_id)
+	* Transaction.sum(:user_id)
+
+	By passing a reference variable **Ruby** will create an instance for each selected row; on the other hand, the second option leave the heavy to the database.
+
+* **Uniq**: many times a query only want to ask for the distinct values on a table.
+	*Transaction.pluck(:user_id).uniq
+	*Transaction.uniq.pluck(:user_id)
+
+	The methods above are the same and create the same result but the difference resides on how the query is done. The first one the column values, after that it filter. But the second one executes the *DISTINCT* over the database, which means better performance.
+
+* **Plunk vs Map**: these methods help to get specific columns from the records on the *DB*
+	*Transaction.all.map(&:user_id)
+	*Transaction.pluck(:user_id)
+
+	With the *Map* helper **Ruby** will instantiate a model for each row the query retrieve, which translates on consuming time. Contrasting with *Pluck* it only generates an array with the results of the column is require.
+
+* **find_each vs. each**: Time to time when a query is done a post process need to be perform. In case the retrieve quantity is small is ok to use **each**; but, when the result become massive, is better to use **find_each**, because, it set the result on batches of 1000, making a lower load to the memory. In case you need a whole update on a table also is recommended to use **update_all**, this method will improve upto 100x the performance.
+
+
+
 
 ## How Background task could save you application from blocking.
 Even though the application accomplish high performance queries to the database, there are tasks that consume time. An example is an application that need to process images.
