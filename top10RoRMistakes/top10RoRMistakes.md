@@ -386,10 +386,27 @@ In this case the application will have a new structure that look like the image 
 
 ![non blocking APP][non_blocking_app]
 
-
+When the application
 
 ## Gems everywhere
-The main idea of the **rubygems**  ([rubygems.org](https://rubygems.org/)) is to do not re-invent de wheel, in many cases you could use a specific library that add functionality to the project need. On the other hand, the dark side by depending too much ok 3º libraries is that programmers do not take time to learn how the implementation actually works. Additionally, ...
+The main idea of the **rubygems**  ([rubygems.org](https://rubygems.org/)) is to do not re-invent de wheel, in many cases you could use a specific library that add functionality to the project need. On the other hand, the dark side by depending too much ok 3º libraries is that programmers do not take time to learn how the implementation actually works this could cause that modify the functionality could be an difficult task or even impossible.
+
+### Code sizing
+With each third party **gem** used on an application the overhead will increase, the response time will grow and project''s size will get bigger in unexpected dimensions, because each **gem** comes with extra files.
+
+
+### Bundle update, incompatibilities
+On a **Ruby** project updating the dependencies is a common task that every project should do, to keep the security and performance at the best quality. But, sometimes when you have a bunch of dependencies a simple update could become a nightmare.
+
+Imagine the case where your project has two **gems** but at the same time they relies on third **gem**  but with different versions. On this case, monkey patch one of the gems could be a solution, but the best way to sort the problem is to code your own implementation to solve the problem. It could take around 20 to 30 minutes to understand how a gems works, before beginning the implementation.
+
+### Remember
+Remember before add a new **gem** to an application, ans the following questions:
++ Does it provide the functionality I need?
++ Can I implement the functionality without the gem and is simple enough for me?
++ Does the overhead provided by **gem** worth functionality?
++ Have an active maintainer?
+
 
 
 
@@ -397,6 +414,8 @@ The main idea of the **rubygems**  ([rubygems.org](https://rubygems.org/)) is to
 ## Sensitive data into repositories
 ##### [Sensitive data in git repositories](http://blog.arvidandersson.se/2013/06/10/credentials-in-git-repos).
 The previous article gives us an idea of how the important data like cloud credentials and/or databases credentials should be keep out of git scope by adding them to *__.__gitignore* file. Although, **RoR** provides *environment variables* to help protect sensitive data, people get used to rails "magic", which makes them forget to ignore sensitive data files and leave to security flaw open in your repository.
+
+The usual files that need to be ignore on an **RoR** project is: 
 
 
 ## Testing, Whats that for?
