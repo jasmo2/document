@@ -415,11 +415,88 @@ Remember before add a new **gem** to an application, ans the following questions
 ##### [Sensitive data in git repositories](http://blog.arvidandersson.se/2013/06/10/credentials-in-git-repos).
 The previous article gives us an idea of how the important data like cloud credentials and/or databases credentials should be keep out of git scope by adding them to *__.__gitignore* file. Although, **RoR** provides *environment variables* to help protect sensitive data, people get used to rails "magic", which makes them forget to ignore sensitive data files and leave to security flaw open in your repository.
 
-The usual files that need to be ignore on an **RoR** project is: 
+The usual files that need to be ignore on an **RoR** project is:
 
 
 ## Testing, Whats that for?
-The ruby community is well known for write automated testing. But many rookies does not use them; it does not matter if is TDD or BDD, or even testing after the code has been written. **Test musT be written!**
+The ruby community is well known for write automated testing. But many rookies does not use them; it does not matter if is TDD or BDD, or even testing after the code has been written. **Test musT be written**.[red/green/refactor](https://vimeo.com/43734265)
+
+Continuing, with the test modality the next example will show a simple way how an application could be written:
+In our application is a slugifier for the *Spanish* language that will replace any special character to the equivalent in english.
+
+The next are the assumptions on the example:
++ Ruby >= 2.2.x
++ RSpec gem to test.
++ Test are going to be written first
++ Then code.
+
+> test.rb
+
+```ruby
+require './slugifier'
+
+
+RSpec.describe "slugifier function"  do
+	it 'should return lowercase always' do
+	    big_letters = "CapitalLettersTest"
+	    result = slugifier(big_letters)
+        expect(result).to eq("capitalletterstest")
+	end
+	it 'should return no accents' do
+	    acents = "áéíóúñaeiou"
+	    result = slugifier(acents)
+        expect(result).to eq("aeiounaeiou")
+	end
+	it 'should return - instead of "white-spaces"' do
+	    acents = "spaces test"
+	    result = slugifier(acents)
+        expect(result).to eq("spaces-test")
+	end
+	it 'should return vocals as well as consonants' do
+	    strung = "a e i o u x z y"
+	    result = slugifier(strung)
+        expect(result).to eq("a-e-i-o-u-x-z-y")
+	end
+	it 'should strip all non-alphanumeric' do
+	    non_alphanumeric = "@lpha #merics 1 test"
+        expect(slugifier(non_alphanumeric)).to eq("lpha-merics-1-test")
+	end
+end
+```
+The test below is going to to check. functionalities require to correct run slugifier application.
+First is going to check if the program could convert capcase to lowercase. Then if it special character on the result have disappear, after that check the spaces on the input string will be replace for *-*. Finally, is going to strip the non alphanumeric characters on the string
+
+At first the result will throw the following
+
+```log
+5 examples, 5 failures
+
+Failed examples:
+
+rspec ./slugifier_spec.rb:4 # slugifier function should return lowercase always
+rspec ./slugifier_spec.rb:9 # slugifier function should return no accents
+rspec ./slugifier_spec.rb:14 # slugifier function should return - instead of "white-spaces"
+rspec ./slugifier_spec.rb:19 # slugifier function should return vocals as well as consonants
+rspec ./slugifier_spec.rb:24 # slugifier function should strip all non-alphanumeric
+```
+To get green the application should ensure the five requirements, the following code is an proximation to solve the problem.
+
+```ruby
+def slugifier(strings)
+	slug = strings.downcase.gsub(/á+/,'a')
+		.gsub(/é+/,'e')
+		.gsub(/í+/,'i')
+		.gsub(/ó+/,'o')
+		.gsub(/ú+/,'u')
+		.gsub(/ñ+/,'n')
+		.gsub(/[^\w\s-]/,'')
+		.gsub(/\s+/,'-')
+end
+```
+
+After the implementation everything is back green and the application is fully functional now. On more complex scenarios where not just application''s functionalities are going to be test, but also user interaction the previous **gem RSpec and Capybara** is great choice, because it allow to click and wait for visual answer if there is one. Finally, remember to write test on your applications to give continuity and help add new features easily.
+
+
 
 ## Realize that Ruby is actually a programming language
 Most developers that start with **Ruby** is because **RoR** makes their life too easy (Like my case *XD* ), and most of them believe that the framework is actually the programming language. Normally, people realize that rails is just a way to do web applications, but now a days with microservices boom is common to find minimalistic web-frameworks like:
