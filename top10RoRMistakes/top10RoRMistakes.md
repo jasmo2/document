@@ -505,7 +505,8 @@ Most developers that start with **Ruby** is because **RoR** makes their life too
 + [nancy](http://guilleiguaran.github.io/nancy/)
 + [grape](http://www.ruby-grape.org/)
 
-The odd part of working with minimalistic frameworks is that most common rails app defaults are not added. Moreover, the developer should be more experience to code on these types of frameworks vs **RoR** .
+The odd part of working with minimalistic frameworks is that most common rails app defaults are not added. Moreover, the developer should be more experience to code on these types of frameworks vs **RoR** , once code on a minimal framework most developers stay with them, because they are much faster than **RoR** ((ruby frameworks benchmark)[http://www.sitepoint.com/ruby-microframeworks-round/]), also learn how to integrate all the gem ecosystem to its new workshop.
+
 
 
 ## Final thoughts
