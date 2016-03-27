@@ -413,9 +413,13 @@ Remember before add a new **gem** to an application, ans the following questions
 
 ## Sensitive data into repositories
 ##### [Sensitive data in git repositories](http://blog.arvidandersson.se/2013/06/10/credentials-in-git-repos).
-The previous article gives us an idea of how the important data like cloud credentials and/or databases credentials should be keep out of git scope by adding them to *__.__gitignore* file. Although, **RoR** provides *environment variables* to help protect sensitive data, people get used to rails "magic", which makes them forget to ignore sensitive data files and leave to security flaw open in your repository.
+The previous article gives us an idea of how the important data like cloud credentials and/or databases credentials should be keep out of git scope by adding them to *__.__gitignore* file. Although, **RoR** provides *environment variables* to help protect sensitive data, people get used to rails "magic", which makes them forget to ignore sensitive data files and leave to security flaw open in your repository. Keep in mind code leave on public repositories, open the gates to the attacker to get all kind of information that will compromise your application.
 
-The usual files that need to be ignore on an **RoR** project is:
+The usual files that need to be ignore on an **RoR** project are:
++ config/initializers/secret_token.rb
++ config/secrets.yml
++ config/database.yml
+
 
 
 ## Testing, Whats that for?
