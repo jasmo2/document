@@ -542,9 +542,13 @@ The odd part of working with minimalistic frameworks is that most common rails a
 
 
 ## Final thoughts
-**Ruby** is a great language that is fully **OOP**;  however, most of the people get into it through **RoR**, which is a great start. Is important to keep in mind the good practices and the common mistakes done by rookie developers.
+**Ruby** is a great language that is fully **OOP**;  however, most of the people get into it through **RoR**, which is a great start. Is important to keep in mind the good practices and the common mistakes done by rookie developers.As a good **Ruby** and possible **RoR** developer is good practice to follow design patterns. One common pattern use on web applications specially on Rails is MVC, below is presented the diagram
+
+![MVC Rails][mvc_pattern]
+
 
 Finally, remind that **Ruby** is a complete programming language that allow the user to create big extensible applications, that not necessary need to be part of an all-in-one framework, but also could code as small distributed microservices.
 
 [blocking_app]: https://raw.githubusercontent.com/jasmo2/document/master/images/blocking_app.png "title"
 [non_blocking_app]: https://raw.githubusercontent.com/jasmo2/document/master/images/non_blocking_app.png "title"
+[mvc_pattern]: https://raw.githubusercontent.com/jasmo2/document/master/images/mvc_pattern.png "title"
